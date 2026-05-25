@@ -1,0 +1,4 @@
+
+# Claude Code agents (fetched at session start)
+.claude/agents/
+.claude/settings.local.json
