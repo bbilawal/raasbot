@@ -41,7 +41,7 @@ export default async function DashboardPage() {
     supabase.from('quotes').select('*', { count: 'exact', head: true }).eq('status', 'new'),
     supabase
       .from('orders')
-      .select('id, total, status, created_at, metadata')
+      .select('id, total_amount, status, created_at, customer_name, customer_email, currency')
       .order('created_at', { ascending: false })
       .limit(5),
   ])
@@ -147,10 +147,10 @@ export default async function DashboardPage() {
                       </Link>
                     </td>
                     <td className="py-3 pr-4 text-white/80">
-                      {(order.metadata as Record<string,string>)?.customer_name || (order.metadata as Record<string,string>)?.customer_email || 'Unknown'}
+                      {order.customer_name || order.customer_email || 'Unknown'}
                     </td>
                     <td className="py-3 pr-4 text-white">
-                      ${Number(order.total ?? 0).toFixed(2)}
+                      {order.currency?.toUpperCase() ?? 'CAD'} {((order.total_amount ?? 0) / 100).toFixed(2)}
                     </td>
                     <td className="py-3 pr-4">
                       <StatusBadge status={order.status} />

@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { LogOut } from 'lucide-react'
@@ -27,8 +26,9 @@ export default async function AdminLayout({
     data: { user },
   } = await supabase.auth.getUser()
 
+  // No authenticated user — render children only (login page renders itself without sidebar)
   if (!user) {
-    redirect('/admin/login')
+    return <div className="min-h-screen bg-[#0A0A0A] text-white">{children}</div>
   }
 
   const { data: profile } = await supabase
@@ -37,8 +37,10 @@ export default async function AdminLayout({
     .eq('id', user.id)
     .single()
 
+  // User exists but not admin/editor — still render children only
+  // Individual pages call requireAdmin() and redirect themselves
   if (!profile || !['admin', 'editor'].includes(profile.role)) {
-    redirect('/admin/login')
+    return <div className="min-h-screen bg-[#0A0A0A] text-white">{children}</div>
   }
 
   return (
